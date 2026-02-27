@@ -1,24 +1,21 @@
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
-import org.hamcrest.Matchers;
 import org.junit.Test;
-import java.util.List;
-import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
-public class TestApi_Futebol {
+public class TestApi_Football {
 
     String url = "https://free-api-live-football-data.p.rapidapi.com";
     RequestSpecification requestSpecification = new RequestSpecBuilder().setBaseUri(url).build();
 
     @Test
-    public void testAPIfutebolBrazil(){
+    public void testAPI_Football_Brazil(){
 
         String path = "/football-get-all-countries";
 
-        // findAll retorna uma lista → então o tipo deve ser List<String>
-        String nomes =
+        // find returns a single object → extract only the name
+        String countryName =
                 given()
                         .header("X-RapidAPI-Key","a246d7caabmsha5906de41ecca26p1afd2cjsn352845771666")
                         .header("X-RapidAPI-Host","free-api-live-football-data.p.rapidapi.com")
@@ -32,56 +29,56 @@ public class TestApi_Futebol {
                         .extract()
                         .path("response.countries.find { it.ccode == 'BRA' }.name");
 
-        System.out.println(nomes);
+        System.out.println(countryName);
     }
 
     @Test
-    public void testAPIresponcefutebolBrazil(){
+    public void testAPI_Response_Football(){
 
-        // Caminho do endpoint
+        // Endpoint path
         String path = "/football-get-all-countries";
 
-        // Response é o tipo correto para usar .path()
+        // Response object to use .path()
         io.restassured.response.Response response =
                 given()
-                        // Headers obrigatórios do RapidAPI
+                        // Required RapidAPI headers
                         .header("X-RapidAPI-Key","a246d7caabmsha5906de41ecca26p1afd2cjsn352845771666")
                         .header("X-RapidAPI-Host","free-api-live-football-data.p.rapidapi.com")
 
-                        // Usa a URL base configurada no RequestSpecification
+                        // Base URL from RequestSpecification
                         .spec(requestSpecification)
 
-                        // Loga toda a requisição
+                        // Log request
                         .log().all()
 
                         .when()
-                        // Executa o GET
+                        // Execute GET
                         .get(path)
 
                         .then()
-                        // Loga toda a resposta
+                        // Log response
                         .log().all()
 
-                        // Valida status HTTP
+                        // Validate HTTP status
                         .statusCode(200)
 
-                        // Extrai a resposta como objeto Response
+                        // Extract response object
                         .extract()
                         .response();
 
-        // Variáveis para armazenar os primeiros países da lista
-        String primeiroPais, segundoPais, terceiroPais, quartoPais;
+        // Variables for the first countries in the list
+        String firstCountry, secondCountry, thirdCountry, fourthCountry;
 
-        // Caminho JSON correto baseado no JSON que você enviou
-        primeiroPais = response.path("response.countries[0].name");
-        segundoPais  = response.path("response.countries[1].name");
-        terceiroPais = response.path("response.countries[2].name");
-        quartoPais   = response.path("response.countries[3].name");
+        // Correct JSONPath based on your JSON
+        firstCountry  = response.path("response.countries[0].name");
+        secondCountry = response.path("response.countries[1].name");
+        thirdCountry  = response.path("response.countries[2].name");
+        fourthCountry = response.path("response.countries[3].name");
 
-        // Imprime os resultados
-        System.out.println("Primeiro país: " + primeiroPais);
-        System.out.println("Segundo país: " + segundoPais);
-        System.out.println("Terceiro país: " + terceiroPais);
-        System.out.println("Quarto país: " + quartoPais);
+        // Print results
+        System.out.println("First country: " + firstCountry);
+        System.out.println("Second country: " + secondCountry);
+        System.out.println("Third country: " + thirdCountry);
+        System.out.println("Fourth country: " + fourthCountry);
     }
 }
